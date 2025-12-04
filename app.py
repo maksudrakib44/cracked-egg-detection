@@ -22,7 +22,7 @@ from ultralytics import YOLO
 
 
 # ========= CONFIG =========
-MODEL_PATH = "egg_eggDetector_best.pt"   # your trained model
+MODEL_PATH = "egg_eggDetector_best.pt"   # trained model
 VIDEO_RUNS_DIR = "runs_video"            # where annotated videos will be saved
 PAGE_TITLE = "Egg vs Cracked Egg Detection"
 STANDARD_SIZE = (640, 640)               # width, height for image processing
