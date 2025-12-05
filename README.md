@@ -1,5 +1,3 @@
-Here’s a polished, ready-to-paste **README** for your repo with your screenshot included:
-
 ````markdown
 # 🥚 Cracked Egg Detection – AI Object Detection App
 
