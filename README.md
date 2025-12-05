@@ -19,11 +19,11 @@ A complete end-to-end **Egg vs Cracked Egg Detection** application using **YOLO*
 
 ---
 
-## 🖼 View
+# Cracked Egg Detection Dashboard
 
-![Cracked Egg Detection Dashboard](https://raw.githubusercontent.com/maksudrakib44/cracked-egg-detection/master/assets/Dashboard02.png)
-*Dashboard interface for the Cracked Egg Detection System*Figure:** Dashboard interface showing real-time egg quality detection results.
+<img src="https://raw.githubusercontent.com/maksudrakib44/cracked-egg-detection/master/assets/Dashboard02.png" width="800" alt="Dashboard Screenshot">
 
+**Figure:** Dashboard interface showing real-time egg quality detection results.
 ---
 
 ## 💻 Installation & Setup
