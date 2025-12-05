@@ -22,6 +22,7 @@ import os
 import io
 import time
 import tempfile
+import sys
 from collections import Counter
 
 import numpy as np
@@ -31,9 +32,17 @@ from PIL import Image
 import streamlit as st
 from ultralytics import YOLO
 
+# ========= STREAMLIT CLOUD DETECTION =========
+# Detect if we're on Streamlit Cloud
+if 'STREAMLIT_SHARING' in os.environ or 'STREAMLIT_DEPLOY' in os.environ:
+    IS_CLOUD = True
+    VIDEO_RUNS_DIR = "/tmp/runs_video"  # Use /tmp for cloud
+else:
+    IS_CLOUD = False
+    VIDEO_RUNS_DIR = "runs_video"  # Use local folder for local
+
 # ========= CONFIG =========
-DEFAULT_MODEL_PATH = "egg_eggDetector_best.pt"   # default weights filename 
-VIDEO_RUNS_DIR = "runs_video"                    # where YOLO saves annotated videos
+DEFAULT_MODEL_PATH = "egg_eggDetector_best.pt"   
 PAGE_TITLE = "🥚 Egg vs Cracked Egg Detection"
 STANDARD_SIZE = (640, 640)                       # standard size used for inference display (width, height)
 
@@ -73,17 +82,57 @@ CUSTOM_CSS = """
 # ========= HELPERS =========
 @st.cache_resource
 def load_model(path: str):
-    """Load the YOLO model and cache it for the session.
-
-    Raises FileNotFoundError if the model file does not exist at the given path.
-    """
-    if not os.path.exists(path):
-        raise FileNotFoundError(
-            f"Model file not found: {path}\n"
-            f"Put your trained model ({os.path.basename(path)}) next to app.py "
-            "or change the model path in the sidebar."
-        )
-    return YOLO(path)
+    """Load the YOLO model with cloud compatibility."""
+    try:
+        # Debug info
+        st.sidebar.write(f"🔍 Looking for model at: {os.path.abspath(path)}")
+        
+        # Check if file exists
+        if not os.path.exists(path):
+            # Try alternative paths (for cloud deployment)
+            alt_paths = [
+                path,  # Original path
+                f"./{path}",  # Current directory
+                f"cracked-egg-detection/{path}",  # GitHub folder structure
+                f"/app/cracked-egg-detection/{path}"  # Streamlit Cloud path
+            ]
+            
+            found = False
+            for alt in alt_paths:
+                if os.path.exists(alt):
+                    path = alt
+                    found = True
+                    st.sidebar.success(f"✅ Found model at: {path}")
+                    break
+            
+            if not found:
+                st.error(f"❌ Model not found. Checked locations: {alt_paths}")
+                # Show directory for debugging
+                st.sidebar.write("📁 Current directory files:")
+                for f in os.listdir('.'):
+                    st.sidebar.write(f"   - {f}")
+                return None
+        
+        # Show loading progress
+        file_size = os.path.getsize(path) // 1024 // 1024  # Convert to MB
+        with st.spinner(f"📦 Loading model ({file_size}MB)... This may take a moment"):
+            model = YOLO(path)
+        
+        st.sidebar.success(f"✅ Model loaded successfully!")
+        return model
+        
+    except Exception as e:
+        st.error(f"❌ Model load error: {str(e)}")
+        
+        # Fallback option for demo
+        st.info("🔄 Trying pretrained YOLOv8n as fallback...")
+        try:
+            model = YOLO('yolov8n.pt')
+            st.success("✅ Using pretrained YOLOv8n for demo")
+            return model
+        except:
+            st.error("❌ Could not load any model")
+            return None
 
 
 def resize_to_standard(img: Image.Image) -> Image.Image:
@@ -163,51 +212,86 @@ def image_to_download_bytes(rgb_array):
 
 def run_inference_video(model: YOLO, video_bytes: bytes, conf: float, max_det: int):
     """
-    Run YOLO on an uploaded video and save the annotated video to VIDEO_RUNS_DIR.
+    Run YOLO on an uploaded video with cloud compatibility.
     Returns:
       - annotated_path (str) : path to saved annotated video (or None)
       - total_counts (Counter) : aggregated counts across all frames
     """
+    # CLOUD COMPATIBILITY - Use appropriate directory
+    if IS_CLOUD:
+        # On Streamlit Cloud, use temp directory
+        video_runs_dir = tempfile.mkdtemp()
+    else:
+        # Local development
+        video_runs_dir = VIDEO_RUNS_DIR
+    
+    # Ensure directory exists
+    os.makedirs(video_runs_dir, exist_ok=True)
+    
     # Save source video to a temp file
-    with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False, dir=video_runs_dir) as tmp:
         tmp.write(video_bytes)
         video_path = tmp.name
 
-    # Run prediction, set save=True so ULTRALYTICS saves annotated outputs
-    results = model.predict(
-        source=video_path,
-        conf=conf,
-        max_det=max_det,
-        save=True,
-        project=VIDEO_RUNS_DIR,
-        name="pred",
-        exist_ok=True,
-        verbose=False,
-    )
-
-    # Locate annotated video file created by YOLO
-    out_dir = os.path.join(VIDEO_RUNS_DIR, "pred")
-    annotated_path = None
-    if os.path.isdir(out_dir):
-        vids = [f for f in os.listdir(out_dir) if f.lower().endswith((".mp4", ".avi", ".mkv", ".mov"))]
-        if vids:
-            # pick first annotated video
-            annotated_path = os.path.join(out_dir, vids[0])
-
-    # Aggregate frame-by-frame detection counts
-    names_dict = model.names
-    total_counts = Counter()
-    for r in results:
-        frame_counts, _ = summarize_detections(r, names_dict)
-        total_counts.update(frame_counts)
-
-    # Keep annotated file; remove temp source video
     try:
-        os.remove(video_path)
-    except Exception:
-        pass
+        # Run prediction, set save=True so ULTRALYTICS saves annotated outputs
+        results = model.predict(
+            source=video_path,
+            conf=conf,
+            max_det=max_det,
+            save=True,
+            project=video_runs_dir,  # Use the dynamic directory
+            name="pred",
+            exist_ok=True,
+            verbose=False,
+        )
 
-    return annotated_path, total_counts
+        # Locate annotated video file created by YOLO
+        out_dir = os.path.join(video_runs_dir, "pred")
+        annotated_path = None
+        if os.path.isdir(out_dir):
+            vids = [f for f in os.listdir(out_dir) if f.lower().endswith((".mp4", ".avi", ".mkv", ".mov"))]
+            if vids:
+                # pick first annotated video
+                annotated_path = os.path.join(out_dir, vids[0])
+
+        # Aggregate frame-by-frame detection counts
+        names_dict = model.names
+        total_counts = Counter()
+        for r in results:
+            frame_counts, _ = summarize_detections(r, names_dict)
+            total_counts.update(frame_counts)
+
+        return annotated_path, total_counts
+        
+    except Exception as e:
+        st.error(f"Video processing error: {str(e)}")
+        return None, Counter()
+    finally:
+        # Cleanup temp files
+        try:
+            if os.path.exists(video_path):
+                os.remove(video_path)
+        except:
+            pass
+
+
+def check_environment():
+    """Check environment and show debug info."""
+    with st.expander("🛠️ Environment Info (Debug)"):
+        st.write(f"**Python Version:** {sys.version}")
+        st.write(f"**Current Directory:** {os.getcwd()}")
+        st.write(f"**Is Cloud Deployment:** {IS_CLOUD}")
+        st.write(f"**Model Path:** {DEFAULT_MODEL_PATH}")
+        st.write(f"**Model Exists:** {os.path.exists(DEFAULT_MODEL_PATH)}")
+        
+        if os.path.exists(DEFAULT_MODEL_PATH):
+            size_mb = os.path.getsize(DEFAULT_MODEL_PATH) // 1024 // 1024
+            st.write(f"**Model Size:** {size_mb}MB")
+        
+        st.write("**Files in current directory:**")
+        for file in os.listdir('.'):
+            st.write(f"- {file}")
 
 
 def render_footer():
@@ -237,16 +321,33 @@ st.sidebar.markdown("---")
 st.sidebar.subheader("Model info & metadata")
 st.sidebar.info("Model will be loaded from the path above (cached).")
 user_map = st.sidebar.text_input("Optional: mAP / Notes (paste training mAP here)", "")
+
+# Debug button
+if st.sidebar.button("🛠️ Show Debug Info"):
+    check_environment()
+
 st.sidebar.markdown("##")
 
 # ---------- Load model (safe) ----------
 with st.spinner("Loading YOLO model..."):
     try:
         model = load_model(model_path_input)
+        if model is None:
+            st.error("""
+            ### ⚠️ Model could not be loaded!
+            
+            **Possible solutions:**
+            1. Make sure `egg_eggDetector_best.pt` in  GitHub repository
+            2. Check the file size (should be <200MB for Streamlit Cloud)
+            3. Verify the filename is correct
+            4. For local testing, place the model file in same folder as app.py
+            """)
+            st.stop()
+        
         names = model.names  # id -> label mapping
         st.sidebar.success("Model loaded")
-    except FileNotFoundError as e:
-        st.sidebar.error(str(e))
+    except Exception as e:
+        st.sidebar.error(f"Error loading model: {str(e)}")
         st.stop()  # stop app until model is available
 
 # Show detected class names & allow remapping if desired
