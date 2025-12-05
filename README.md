@@ -19,11 +19,10 @@ A complete end-to-end **Egg vs Cracked Egg Detection** application using **YOLO*
 
 ---
 
-## 🖼 Screenshot
+## 🖼 View
 
-**Dashboard Demo:**
-
-![Dashboard](https://github.com/maksudrakib44/cracked-egg-detection/blob/master/assets/Dashboard02.png)
+![Cracked Egg Detection Dashboard](https://raw.githubusercontent.com/maksudrakib44/cracked-egg-detection/master/assets/Dashboard02.png)
+*Dashboard interface for the Cracked Egg Detection System*Figure:** Dashboard interface showing real-time egg quality detection results.
 
 ---
 
@@ -122,7 +121,7 @@ Feel free to fork, clone, or experiment with the model and dashboard.
 
 * Email: [maksudrakib44@gmail.com](mailto:maksudrakib44@gmail.com)
 * GitHub: [maksudrakib44](https://github.com/maksudrakib44)
-* Portfolio: [maksudul]([https://github.com/maksudrakib44](https://maksud-portfolio.vercel.app/))
+* Portfolio: [Md. Maksudul Haque](https://maksud-portfolio.vercel.app/)
 
 ---
 
@@ -130,9 +129,3 @@ Feel free to fork, clone, or experiment with the model and dashboard.
 
 This project is for educational purposes only. Please do not use for commercial purposes without permission.
 
-```
-
----
-
-
-```
