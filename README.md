@@ -1,46 +1,36 @@
-Here’s a professional, attractive, and ready-to-paste **README.md** for your GitHub repo:
+Here’s a polished, ready-to-paste **README** for your repo with your screenshot included:
 
-```markdown
-# 🥚 Cracked Egg Detection – AI Object Detection Application
+````markdown
+# 🥚 Cracked Egg Detection – AI Object Detection App
 
-![Egg Detection](https://raw.githubusercontent.com/maksudrakib44/cracked-egg-detection/master/assets/Dashboard02.png)  
-
-A complete **end-to-end object detection system** to detect **cracked eggs vs whole eggs** using a **custom YOLO model**. This project includes a **Streamlit dashboard** for real-time detection via **webcam, image, or video input** with live stats and downloadable results.
+A complete end-to-end **Egg vs Cracked Egg Detection** application using **YOLO** and **Streamlit**. This project detects **cracked eggs** vs **whole eggs** from images, videos, or live webcam feed and provides a **real-time interactive dashboard** with detection statistics.  
 
 ---
 
 ## 🚀 Features
 
-- Detects **cracked eggs** and **whole eggs** in images, videos, and live webcam feed.  
-- **Confidence threshold slider** to adjust detection sensitivity dynamically.  
-- **Maximum detections per frame** configurable for video processing.  
-- **Annotated image/video download** for offline use.  
-- **Real-time object counter** (Cracked eggs / Whole eggs / Total).  
-- **Interactive dashboard** built with Streamlit for ease of use.  
-- **Lightweight YOLO model** optimized for fast inference.  
+- Detects **Cracked Eggs** and **Whole Eggs** in images, videos, and live webcam feed.
+- Real-time **Webcam detection** with bounding boxes.
+- Adjustable **confidence threshold** and maximum detections per frame.
+- **Annotated image/video download**.
+- **Object counting** with visual statistics (bar charts).
+- User-friendly **Streamlit dashboard** for easy interaction.
+- Clean, organized, and commented code for easy understanding.
 
 ---
 
-## 📁 Repository Structure
+## 🖼 Screenshot
 
-```
+**Dashboard Demo:**
 
-cracked-egg-detection/
-│
-├── app.py                  # Streamlit application for dashboard
-├── egg_eggDetector_best.pt # Trained YOLO weights
-├── requirements.txt        # Required Python packages
-├── README.md               # Project overview & instructions
-├── runs_video/             # Folder for annotated video outputs
-└── assets/                 # Images or demo screenshots
-
-````
+![Dashboard](https://github.com/maksudrakib44/cracked-egg-detection/blob/master/assets/Dashboard02.png)
 
 ---
 
-## 🛠 Installation
+## 💻 Installation & Setup
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/maksudrakib44/cracked-egg-detection.git
 cd cracked-egg-detection
@@ -59,7 +49,9 @@ conda activate crack_egg
 pip install -r requirements.txt
 ```
 
-4. Run the Streamlit app:
+4. Place your trained YOLO model (`egg_eggDetector_best.pt`) in the project root.
+
+5. Run the Streamlit app:
 
 ```bash
 streamlit run app.py
@@ -67,59 +59,80 @@ streamlit run app.py
 
 ---
 
-## 🎯 How to Use
+## 🏗 Project Structure
 
-1. Open the Streamlit dashboard in your browser.
-2. Choose **input type**:
-
-   * **Webcam**: Live detection in real-time.
-   * **Image upload**: Detect objects in static images.
-   * **Video upload**: Detect objects in video files.
-3. Adjust the **Confidence Threshold** and **Maximum Detections** sliders.
-4. View the **annotated results**, **object counts**, and optionally **download images/videos**.
-
----
-
-## 📊 Dashboard Screenshots
-
-
-**Image Detection**
-![Image](https://raw.githubusercontent.com/maksudrakib44/cracked-egg-detection/main/assets/image_demo.png)
+```
+cracked-egg-detection/
+│
+├── assets/                  # Screenshots and visual assets
+├── app.py                   # Streamlit dashboard application
+├── egg_eggDetector_best.pt  # Trained YOLO model
+├── requirements.txt         # Dependencies
+└── README.md                # Project documentation
+```
 
 ---
 
-## 🧠 Model Info
+## 🧠 How It Works
 
-* **Architecture:** YOLO (Ultralytics)
-* **Classes:** `cracked_egg`, `whole_egg`
-* **Dataset:** Custom annotated egg images (~250 images) via **Roboflow**
-* **Performance:** High detection accuracy for real-time usage
-* **Weights:** `egg_eggDetector_best.pt`
+1. **Image Detection:** Upload an image of eggs → detects cracked and whole eggs → shows annotated image → download option → counts & chart display.
+2. **Video Detection:** Upload a video → YOLO processes frame by frame → annotated video → download → aggregated counts & chart.
+3. **Webcam Detection:** Capture live webcam frames → YOLO predicts in real-time → annotated frame display → counts & FPS display.
+
+---
+
+## 📦 Dataset
+
+* Annotated dataset available on [Roboflow Workspace](https://app.roboflow.com/maksud)
+* Classes: `cracked_egg`, `whole_egg`
+* Dataset includes 300+ images of eggs with bounding boxes.
+
+---
+
+## 📈 Model
+
+* YOLO custom-trained on **Cracked Egg Dataset**.
+* Achieved high detection accuracy (mAP ~0.95).
+* Trained weights: `egg_eggDetector_best.pt`.
+
+---
+
+## 📝 Notes
+
+* For best results, use a **plain background** during webcam detection.
+* Show eggs clearly in frame for accurate detection.
+* The confidence slider allows dynamic adjustment for stricter or looser detections.
 
 ---
 
 ---
 
-## ⚡ Contributions
+## ⚡ Future Improvements
 
-This project is developed by **Md. Maksudul Haque** as part of the **IEEE Computer Society SBC GUB AI/ML Bootcamp**.
-Feel free to **fork**, **clone**, or **experiment** with the model and dashboard.
-
----
-
-## 📝 License
-
-This project is **for educational purposes only**. Please do not use for commercial purposes without permission.
+* Add **more egg conditions** (e.g., rotten, half-cracked).
+* Integrate **mobile-friendly interface** for on-field detection.
+* Export results as **Excel/CSV** for inventory tracking.
 
 ---
 
-**Contact:** Md. Maksudul Haque – [maksudrakib44@gmail.com](mailto:maksudrakib44@gmail.com)
+## 👤 Author
+
+This project is developed by Md. Maksudul Haque as part of the IEEE Computer Society SBC GUB AI/ML Bootcamp.
+Feel free to fork, clone, or experiment with the model and dashboard.
+
+* Email: [maksudrakib44@gmail.com](mailto:maksudrakib44@gmail.com)
+* GitHub: [maksudrakib44](https://github.com/maksudrakib44)
+* Portfolio: [maksudul]([https://github.com/maksudrakib44](https://maksud-portfolio.vercel.app/))
+
+---
+
+## 📄 License
+
+This project is for educational purposes only. Please do not use for commercial purposes without permission.
 
 ```
 
 ---
 
-If you want, I can also make a **more visually attractive version with badges, GIF demo, and colored sections** for extra “wow” factor to impress reviewers for your submission.  
 
-Do you want me to do that?
 ```
