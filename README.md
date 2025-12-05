@@ -3,7 +3,7 @@ Here’s a professional, attractive, and ready-to-paste **README.md** for your G
 ```markdown
 # 🥚 Cracked Egg Detection – AI Object Detection Application
 
-![Egg Detection](https://raw.githubusercontent.com/maksudrakib44/cracked-egg-detection/main/assets/egg_demo.png)  
+![Egg Detection](https://raw.githubusercontent.com/maksudrakib44/cracked-egg-detection/master/assets/Dashboard02.png)  
 
 A complete **end-to-end object detection system** to detect **cracked eggs vs whole eggs** using a **custom YOLO model**. This project includes a **Streamlit dashboard** for real-time detection via **webcam, image, or video input** with live stats and downloadable results.
 
